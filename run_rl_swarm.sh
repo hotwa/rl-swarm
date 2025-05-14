@@ -795,7 +795,7 @@ else
 fi # End of if/else for modal-login/temp-data/userData.json
 
 echo -e "${CYAN}${BOLD}[✓] Setting up Python virtual environment...${NC}"
-if python3 -m venv .venv && source .venv/bin/activate; then
+if python3 -m venv --copies .venv && source .venv/bin/activate; then
     echo -e "${GREEN}${BOLD}[✓] Python virtual environment set up and activated successfully.${NC}"
 else
     echo -e "${RED}${BOLD}[✗] Failed to set up or activate virtual environment.${NC}"
@@ -820,6 +820,8 @@ if [ -z "$CONFIG_PATH" ]; then # Only set if not already set
     else # CPU path (includes macOS)
         echo -e "${YELLOW}${BOLD}[✓] No GPU detected or CPU-only mode, using CPU/macOS configuration.${NC}"
         pip install -r "$ROOT"/requirements-cpu.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+        pip install torch torchvision torchaudio
+        pip install hivemind
         # For macOS, the config path should point to a mac-specific or generic CPU config
         # The original script had a specific mac config for 0.5b. We can adapt or generalize.
         if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -913,7 +915,7 @@ fi
 
 
 if [ -n "$ORG_ID" ]; then
-    python -m hivemind_exp.gsm8k.train_single_gpu \
+    python3 -m hivemind_exp.gsm8k.train_single_gpu \
     --hf_token "$HUGGINGFACE_ACCESS_TOKEN" \
     --identity_path "$IDENTITY_PATH" \
     --modal_org_id "$ORG_ID" \
@@ -921,7 +923,7 @@ if [ -n "$ORG_ID" ]; then
     --config "$CONFIG_PATH" \
     --game "$GAME"
 else
-    python -m hivemind_exp.gsm8k.train_single_gpu \
+    python3 -m hivemind_exp.gsm8k.train_single_gpu \
     --hf_token "$HUGGINGFACE_ACCESS_TOKEN" \
     --identity_path "$IDENTITY_PATH" \
     --public_maddr "$PUB_MULTI_ADDRS" \
