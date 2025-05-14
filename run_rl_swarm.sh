@@ -820,8 +820,8 @@ if [ -z "$CONFIG_PATH" ]; then # Only set if not already set
     else # CPU path (includes macOS)
         echo -e "${YELLOW}${BOLD}[✓] No GPU detected or CPU-only mode, using CPU/macOS configuration.${NC}"
         pip install -r "$ROOT"/requirements-cpu.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
-        pip install torch torchvision torchaudio
-        pip install hivemind
+        # pip install torch torchvision torchaudio
+        # pip install hivemind@git+https://github.com/learning-at-home/hivemind@1.11.11
         # For macOS, the config path should point to a mac-specific or generic CPU config
         # The original script had a specific mac config for 0.5b. We can adapt or generalize.
         if [[ "$OSTYPE" == "darwin"* ]]; then
