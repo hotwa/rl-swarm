@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# —— 代理设置 —— 
+# —— 代理设置 ——
 # export HTTP_PROXY='http://192.168.103.58:7897'
 # export HTTPS_PROXY='http://192.168.103.58:7897'
 # # 确保对本地 127.0.0.1/localhost 的请求不走代理
@@ -11,7 +11,7 @@ restart_count=0
 LOGFILE="$HOME/rl-swarm/swarm.log"
 
 # 激活虚拟环境
-source ~/rl_env310/bin/activate
+source ~/rl-swarm/.venv/bin/activate
 # 内存优化参数
 export PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
 export PYTORCH_MPS_ALLOCATOR_RESERVED_SIZE=4096
@@ -37,9 +37,12 @@ while [ $restart_count -lt $MAX_RESTARTS ]; do
   # 监控线程：每 10s 检查日志中的关键错误
   (
     while kill -0 "$TRAIN_PID" &>/dev/null; do
+      # 检查特定的错误信息
       if grep -q "UnboundLocalError: local variable 'current_batch' referenced before assignment" "$LOGFILE" \
-         || grep -q "404 Client Error" "$LOGFILE"; then
-        echo "[$(date)] 检测到关键错误（UnboundLocalError 或 HTTP 404），杀掉训练进程 $TRAIN_PID"
+         || grep -q "404 Client Error" "$LOGFILE" \
+         || grep -q "Failed to connect to Gensyn Testnet" "$LOGFILE" \
+         || grep -q "P2PDaemonError: Daemon failed to start" "$LOGFILE"; then # <--- 新增 P2P Daemon 错误检查
+        echo "[$(date)] 检测到关键错误（UnboundLocalError, HTTP 404, Gensyn 连接失败 或 P2P Daemon 启动失败），杀掉训练进程 $TRAIN_PID" # <--- 修改了提示信息
         kill "$TRAIN_PID"
         break
       fi
